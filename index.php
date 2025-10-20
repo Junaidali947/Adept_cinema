@@ -1,42 +1,38 @@
-<?php include 'common/header.php'; ?>
+<?php
+include 'common/header.php';
 
-<main>
-    <!-- Banners Slider -->
-    <section class="mb-8">
-        <div class="relative w-full h-48 md:h-64 rounded-lg overflow-hidden">
-            <?php
-            $banners = $conn->query("SELECT * FROM banners ORDER BY created_at DESC LIMIT 5");
-            while ($banner = $banners->fetch_assoc()) :
-            ?>
-            <a href="movie_details.php?id=<?= $banner['target_movie_id'] ?>">
-                <img src="uploads/<?= htmlspecialchars($banner['banner_image_url']) ?>" class="w-full h-full object-cover" alt="Banner">
-            </a>
-            <?php endwhile; ?>
-        </div>
-    </section>
+// Fetch stats
+$total_movies = $conn->query("SELECT COUNT(*) as count FROM movies")->fetch_assoc()['count'];
+$total_categories = $conn->query("SELECT COUNT(*) as count FROM categories")->fetch_assoc()['count'];
+$total_banners = $conn->query("SELECT COUNT(*) as count FROM banners")->fetch_assoc()['count'];
+?>
 
-    <!-- Movie Categories -->
-    <?php
-    $categories = $conn->query("SELECT * FROM categories ORDER BY category_name ASC");
-    while ($category = $categories->fetch_assoc()) :
-    ?>
-    <section class="mb-8">
-        <h2 class="text-xl font-semibold mb-4"><?= htmlspecialchars($category['category_name']) ?></h2>
-        <div class="flex overflow-x-auto space-x-4 pb-4 no-scrollbar">
-            <?php
-            $cat_id = $category['id'];
-            $movies = $conn->query("SELECT id, poster_url, title FROM movies WHERE category_id = $cat_id ORDER BY release_year DESC");
-            while ($movie = $movies->fetch_assoc()) :
-            ?>
-            <a href="movie_details.php?id=<?= $movie['id'] ?>" class="flex-shrink-0">
-                <div class="w-32 md:w-40">
-                    <img src="uploads/<?= htmlspecialchars($movie['poster_url']) ?>" alt="<?= htmlspecialchars($movie['title']) ?>" class="rounded-lg w-full h-48 md:h-60 object-cover transform hover:scale-105 transition-transform duration-300">
-                </div>
-            </a>
-            <?php endwhile; ?>
-        </div>
-    </section>
-    <?php endwhile; ?>
-</main>
+<h1 class="text-3xl font-bold mb-6">Dashboard</h1>
+
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-gray-800 p-6 rounded-lg">
+        <h2 class="text-lg font-semibold text-gray-400">Total Movies</h2>
+        <p class="text-4xl font-bold mt-2"><?= $total_movies ?></p>
+    </div>
+    <div class="bg-gray-800 p-6 rounded-lg">
+        <h2 class="text-lg font-semibold text-gray-400">Total Categories</h2>
+        <p class="text-4xl font-bold mt-2"><?= $total_categories ?></p>
+    </div>
+    <div class="bg-gray-800 p-6 rounded-lg">
+        <h2 class="text-lg font-semibold text-gray-400">Total Banners</h2>
+        <p class="text-4xl font-bold mt-2"><?= $total_banners ?></p>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="flex space-x-4">
+    <a href="movies.php" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+        <i class="fas fa-plus mr-2"></i>Add New Movie
+    </a>
+    <a href="categories.php" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+        <i class="fas fa-plus mr-2"></i>Add New Category
+    </a>
+</div>
 
 <?php include 'common/bottom.php'; ?>
